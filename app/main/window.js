@@ -5,6 +5,7 @@ const { applyWindowTheme } = require("./theme");
 const createWindow = () => {
   const win = new BrowserWindow({
     title: "Project Workspace Center",
+    icon: path.join(__dirname, "..", "assets", "icon.ico"),
     width: 1440,
     height: 920,
     minWidth: 1180,

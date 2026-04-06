@@ -6,6 +6,8 @@ const { cancelClients } = require("../core/tasks/client");
 
 let mainWindow = null;
 
+app.setAppUserModelId("com.codex.projectworkspacecenter");
+
 const boot = async () => {
   mainWindow = createWindow();
   registerIpc(mainWindow);

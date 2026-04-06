@@ -1,0 +1,31 @@
+{
+  "name": "project-workspace-center",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Electron control center for Minecraft mod workspaces.",
+  "author": "Codex",
+  "main": "app/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "41.1.1",
+    "electron-builder": "26.8.1"
+  },
+  "build": {
+    "appId": "com.codex.projectworkspacecenter",
+    "productName": "Project Workspace Center",
+    "artifactName": "ProjectWorkspaceCenter-${version}.${ext}",
+    "files": [
+      "app/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    }
+  }
+}

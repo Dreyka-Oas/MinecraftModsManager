@@ -1,6 +1,6 @@
 {
   "name": "project-workspace-center",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "private": true,
   "description": "Electron control center for Minecraft mod workspaces.",
   "author": "Codex",

@@ -1,4 +1,4 @@
-import { card, actionBtn } from "../components/cards.js";
+import { card, actionBtn, actionGroup } from "../components/cards.js";
 import { consoleBox, blocksBox, jarsBox } from "../components/lists.js";
 import { progressCard } from "../components/progress.js";
 import { splitPane } from "../layout/split.js";
@@ -21,13 +21,13 @@ export const buildPanelKeys = (state) => ({
 });
 
 export const buildPanelHtml = (state, name) => {
-  if (name === "console") return card("Console de build", consoleBox(state.build.logs, "Console vide.", true), actionBtn("Clear", "clear-build-logs"));
+  if (name === "console") return card("Console de build", consoleBox(state.build.logs, "Console vide.", true), actionGroup(actionBtn("Extraire", "export-build-logs"), actionBtn("Clear", "clear-build-logs")));
   if (name === "jars") {
     const actions = `${actionBtn("Tout selectionner", "select-all-jars", !state.build.jars.length)}${actionBtn("Supprimer", "delete-jars", !state.build.selectedJars.length)}`;
     return card("JAR detectes", jarsBox(state.build.jars, state.build.selectedJars), actions);
   }
-  if (name === "report") return card("Rapport de build", consoleBox(state.build.reports, "Aucun build lance."), actionBtn("Clear", "clear-build-reports"));
-  if (name === "errors") return card("Erreurs", blocksBox(state.build.errors[0] === "Aucune erreur." ? [] : state.build.errors, "Aucune erreur."), actionBtn("Clear", "clear-build-errors"));
+  if (name === "report") return card("Rapport de build", consoleBox(state.build.reports, "Aucun build lance."), actionGroup(actionBtn("Extraire", "export-build-reports"), actionBtn("Clear", "clear-build-reports")));
+  if (name === "errors") return card("Erreurs", blocksBox(state.build.errors[0] === "Aucune erreur." ? [] : state.build.errors, "Aucune erreur."), actionGroup(actionBtn("Extraire", "export-build-errors"), actionBtn("Clear", "clear-build-errors")));
   const rows = [["En cours", `${state.build.progress.done}/${state.build.progress.total}`], ["Restantes", `${state.build.progress.remaining}`]];
   return card("Progression", progressCard(state.build.progress, rows));
 };

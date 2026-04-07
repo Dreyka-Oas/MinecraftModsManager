@@ -1,6 +1,6 @@
 import { patchState, getState } from "../state.js";
 import { chooseRepo, openRepoPicker, closeRepoPicker, removeRepoEntry, pickRepoEntry } from "./repo.js";
-import { mainTask, closeModal, openJavaPicker, closeJavaPicker, setRam, setClearJars, setTarget, setLoader, toggleGroup, setJar, confirmModal, deleteJars, selectAllJars, clearBuildLogs, clearBuildReports, clearBuildErrors, clearClientLogs, clearClientReports, clearClientResults, clearGithubReport } from "./tasks.js";
+import { mainTask, closeModal, openJavaPicker, closeJavaPicker, setRam, setClearJars, setTarget, setLoader, toggleGroup, setJar, confirmModal, deleteJars, selectAllJars, clearBuildLogs, clearBuildReports, clearBuildErrors, clearClientLogs, clearClientReports, clearClientResults, clearGithubReport, exportBuildLogs, exportBuildReports, exportBuildErrors, exportClientLogs, exportClientReports, exportClientResults, exportGithubReport } from "./tasks.js";
 import { githubAction, setGithubField } from "./github.js";
 
 const repoAt = (target) => {
@@ -27,10 +27,17 @@ export const onClick = (event) => {
   if (action === "clear-build-logs") return clearBuildLogs() || true;
   if (action === "clear-build-reports") return clearBuildReports() || true;
   if (action === "clear-build-errors") return clearBuildErrors() || true;
+  if (action === "export-build-logs") return exportBuildLogs().then(() => true);
+  if (action === "export-build-reports") return exportBuildReports().then(() => true);
+  if (action === "export-build-errors") return exportBuildErrors().then(() => true);
   if (action === "clear-client-logs") return clearClientLogs() || true;
   if (action === "clear-client-reports") return clearClientReports() || true;
   if (action === "clear-client-results") return clearClientResults() || true;
+  if (action === "export-client-logs") return exportClientLogs().then(() => true);
+  if (action === "export-client-reports") return exportClientReports().then(() => true);
+  if (action === "export-client-results") return exportClientResults().then(() => true);
   if (action === "clear-github-report") return clearGithubReport() || true;
+  if (action === "export-github-report") return exportGithubReport().then(() => true);
   if (action === "select-all-jars") return selectAllJars() || true;
   if (action === "delete-jars") return deleteJars().then(() => true);
   if (action.startsWith("github-")) return githubAction(action).then(() => true);

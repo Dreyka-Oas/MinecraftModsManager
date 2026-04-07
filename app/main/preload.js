@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld("workspaceApi", {
   syncRepos: (payload) => invoke("sync-repos", payload),
   loadWorkspace: (repoPath) => invoke("workspace-load", repoPath),
   saveWorkspace: (payload) => invoke("workspace-save", payload),
+  exportText: (payload) => invoke("text-export", payload),
   saveGithub: (payload) => invoke("github-save", payload),
   setupGitignore: (repoPath) => invoke("github-gitignore", repoPath),
   refreshGithub: (repoPath) => invoke("github-refresh", repoPath),

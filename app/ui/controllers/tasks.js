@@ -7,6 +7,20 @@ const expandedMap = (state) => Object.fromEntries(selectableLoaders(state).map((
 const versionIds = (state, loader) => (selectableLoaders(state).find((item) => item.name === loader)?.versions || []).map((version) => `${loader}/${version.name || version}`);
 const applyChecked = (items, selected, checked) => checked ? [...new Set([...selected, ...items])] : selected.filter((id) => !items.includes(id));
 const jarsForTargets = (state, ids) => state.build.jars.filter((jar) => ids.includes(jar.targetId)).map((jar) => jar.id);
+const joinBlocks = (items, empty) => {
+  const lines = Array.isArray(items) ? items : [];
+  if (!lines.length) return empty;
+  return lines.join("\n\n--------------------\n\n");
+};
+const exportText = async ({ title, defaultName, text, success }) => {
+  const result = await window.workspaceApi.exportText({ title, defaultName, text });
+  if (result?.canceled) return result;
+  if (!result?.ok && result?.error) throw new Error(result.error);
+  if (result?.filePath) {
+    patchState((state) => ({ ...state, repoNotice: `${success} ${result.filePath}` }));
+  }
+  return result;
+};
 
 export const openModal = (kind) => patchState((state) => ({ ...state, modal: { kind, selected: [], expanded: expandedMap(state), ram: state.client.ram || 3, clearJars: false } }));
 export const closeModal = () => patchState((state) => ({ ...state, modal: null }));
@@ -41,6 +55,48 @@ export const clearClientLogs = () => patchState((state) => ({ ...state, client: 
 export const clearClientReports = () => patchState((state) => ({ ...state, client: { ...state.client, reports: [] } }));
 export const clearClientResults = () => patchState((state) => ({ ...state, client: { ...state.client, results: ["Aucun test lance."] } }));
 export const clearGithubReport = () => patchState((state) => ({ ...state, github: { ...state.github, report: [] } }));
+export const exportBuildLogs = () => exportText({
+  title: "Extraire la console de build",
+  defaultName: "build-console.txt",
+  text: (getState().build.logs || []).join("\n"),
+  success: "Console de build enregistree :"
+});
+export const exportBuildReports = () => exportText({
+  title: "Extraire le rapport de build",
+  defaultName: "build-report.txt",
+  text: (getState().build.reports || []).join("\n"),
+  success: "Rapport de build enregistre :"
+});
+export const exportBuildErrors = () => exportText({
+  title: "Extraire les erreurs de build",
+  defaultName: "build-errors.txt",
+  text: joinBlocks(getState().build.errors?.[0] === "Aucune erreur." ? [] : getState().build.errors, "Aucune erreur."),
+  success: "Erreurs de build enregistrees :"
+});
+export const exportClientLogs = () => exportText({
+  title: "Extraire la console de test",
+  defaultName: "client-console.txt",
+  text: (getState().client.logs || []).join("\n"),
+  success: "Console de test enregistree :"
+});
+export const exportClientReports = () => exportText({
+  title: "Extraire le rapport de test",
+  defaultName: "client-report.txt",
+  text: (getState().client.reports || []).join("\n"),
+  success: "Rapport de test enregistre :"
+});
+export const exportClientResults = () => exportText({
+  title: "Extraire les resultats de test",
+  defaultName: "client-results.txt",
+  text: joinBlocks(getState().client.results?.[0] === "Aucun test lance." ? [] : getState().client.results, "Aucun test lance."),
+  success: "Resultats de test enregistres :"
+});
+export const exportGithubReport = () => exportText({
+  title: "Extraire le rapport GitHub",
+  defaultName: "github-report.txt",
+  text: (getState().github.report || []).join("\n"),
+  success: "Rapport GitHub enregistre :"
+});
 
 export const selectAllJars = () => patchState((state) => ({
   ...state,

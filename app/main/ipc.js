@@ -7,6 +7,8 @@ const { refreshGithub, testGithub, receiveGithub } = require("../core/github/ref
 const { publishGithub, setupGitignore } = require("../core/github/publish");
 const { themeState, bindTheme } = require("./theme");
 const { spawnSync } = require("child_process");
+const { writeFile } = require("fs/promises");
+const path = require("path");
 
 const detectJava = () => {
   const result = spawnSync("java", ["-version"], { encoding: "utf8" });
@@ -28,6 +30,19 @@ const keepRepo = async (repo) => {
 const soft = async (work) => {
   try { return await work(); }
   catch (error) { return { ok: false, error: error.message }; }
+};
+const exportText = async (payload = {}) => {
+  const title = payload.title || "Extraire le contenu";
+  const defaultName = payload.defaultName || "export.txt";
+  const text = typeof payload.text === "string" ? payload.text : "";
+  const result = await dialog.showSaveDialog(currentWin, {
+    title,
+    defaultPath: path.join(app.getPath("documents"), defaultName),
+    filters: [{ name: "Fichier texte", extensions: ["txt"] }]
+  });
+  if (result.canceled || !result.filePath) return { canceled: true };
+  await writeFile(result.filePath, text, "utf8");
+  return { canceled: false, filePath: result.filePath };
 };
 
 const registerIpc = (win) => {
@@ -67,6 +82,7 @@ const registerIpc = (win) => {
   ipcMain.handle("sync-repos", (_, payload) => soft(() => syncAppRepos(app, payload.repoPaths, payload.lastRepoPath)));
   ipcMain.handle("workspace-load", (_, repoPath) => loadWorkspaceState(app, repoPath));
   ipcMain.handle("workspace-save", (_, payload) => soft(() => saveWorkspaceState(app, payload.repoPath, payload.workspace)));
+  ipcMain.handle("text-export", (_, payload) => soft(() => exportText(payload)));
   ipcMain.handle("jars-delete", (_, payload) => deleteJars(payload));
   ipcMain.handle("build-start", (_, payload) => startBuilds(payload, send));
   ipcMain.handle("build-cancel", () => cancelBuilds());

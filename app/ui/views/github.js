@@ -1,5 +1,5 @@
 import { esc } from "../dom.js";
-import { card, actionBtn } from "../components/cards.js";
+import { card, actionBtn, actionGroup } from "../components/cards.js";
 import { consoleBox } from "../components/lists.js";
 import { splitPane } from "../layout/split.js";
 
@@ -16,5 +16,5 @@ const form = (state, disabled) => `
 
 export const renderGithub = (state) => {
   const top = splitPane("x", "githubTop", state.layout.githubTop, card("Connexion GitHub", form(state, Boolean(state.busy.github))), card("Branches attendues", branches(state.github.branches)));
-  return `<main class="tab-page pane-page">${splitPane("y", "githubMain", state.layout.githubMain, top, card("Rapport GitHub", consoleBox(state.github.report, "Aucun repo charge."), actionBtn("Clear", "clear-github-report")))}</main>`;
+  return `<main class="tab-page pane-page">${splitPane("y", "githubMain", state.layout.githubMain, top, card("Rapport GitHub", consoleBox(state.github.report, "Aucun repo charge."), actionGroup(actionBtn("Extraire", "export-github-report"), actionBtn("Clear", "clear-github-report"))))}</main>`;
 };

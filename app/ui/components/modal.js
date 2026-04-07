@@ -15,7 +15,12 @@ export const selectionModal = (state, selectable) => {
         <p>${help}</p>
         <div class="tree">${treeBox(selectable, state.modal.selected, state.modal.expanded)}</div>
         ${clean}
-        ${build ? "" : `<label class="field"><span>RAM max (Go)</span><select data-action="set-ram">${Array.from({ length: 64 }, (_, i) => i + 1).map((value) => `<option value="${value}" ${value === state.modal.ram ? "selected" : ""}>${value}</option>`).join("")}</select></label>`}
+        ${build ? "" : `
+        <label class="field"><span>RAM max (Go)</span><select data-action="set-ram">${Array.from({ length: 64 }, (_, i) => i + 1).map((value) => `<option value="${value}" ${value === state.modal.ram ? "selected" : ""}>${value}</option>`).join("")}</select></label>
+        <div class="modal-kill-row">
+          <label class="field modal-check"><input type="checkbox" data-action="set-kill-after-enabled" ${state.modal.killAfterEnabled ? "checked" : ""} /><span>Stop client</span></label>
+          <label class="field modal-kill-delay ${state.modal.killAfterEnabled ? "" : "modal-kill-disabled"}"><span>apres</span><input type="number" min="1" max="7200" data-action="set-kill-after-delay" value="${state.modal.killAfterDelay || 60}" ${state.modal.killAfterEnabled ? "" : "disabled"} /><span>sec</span></label>
+        </div>`}
         <div class="modal-actions">
           <button class="btn secondary" data-action="close-modal">Annuler</button>
           <button class="btn primary" data-action="confirm-modal">${esc(action)}</button>

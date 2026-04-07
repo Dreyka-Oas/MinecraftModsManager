@@ -1,6 +1,6 @@
 import { patchState, getState } from "../state.js";
 import { chooseRepo, openRepoPicker, closeRepoPicker, removeRepoEntry, pickRepoEntry } from "./repo.js";
-import { mainTask, closeModal, openJavaPicker, closeJavaPicker, setRam, setClearJars, setTarget, setLoader, toggleGroup, setJar, confirmModal, deleteJars, selectAllJars, clearBuildLogs, clearBuildReports, clearBuildErrors, clearClientLogs, clearClientReports, clearClientResults, clearGithubReport, exportBuildLogs, exportBuildReports, exportBuildErrors, exportClientLogs, exportClientReports, exportClientResults, exportGithubReport } from "./tasks.js";
+import { mainTask, closeModal, openJavaPicker, closeJavaPicker, setRam, setClearJars, setKillAfterEnabled, setKillAfterDelay, setTarget, setLoader, toggleGroup, setJar, confirmModal, deleteJars, selectAllJars, clearBuildLogs, clearBuildReports, clearBuildErrors, clearClientLogs, clearClientReports, clearClientResults, clearGithubReport, exportBuildLogs, exportBuildReports, exportBuildErrors, exportClientLogs, exportClientReports, exportClientResults, exportGithubReport } from "./tasks.js";
 import { githubAction, setGithubField } from "./github.js";
 
 const repoAt = (target) => {
@@ -48,6 +48,8 @@ export const onChange = (event) => {
   const action = event.target.dataset.action;
   if (action === "set-ram") return setRam(event.target.value) || true;
   if (action === "set-clear-jars") return setClearJars(event.target.checked) || true;
+  if (action === "set-kill-after-enabled") return setKillAfterEnabled(event.target.checked) || true;
+  if (action === "set-kill-after-delay") return setKillAfterDelay(event.target.value) || true;
   if (action === "toggle-target") return setTarget(event.target.dataset.id, event.target.checked) || true;
   if (action === "toggle-loader") return setLoader(event.target.dataset.loader, event.target.checked) || true;
   if (action === "toggle-jar") return setJar(event.target.dataset.id, event.target.checked) || true;

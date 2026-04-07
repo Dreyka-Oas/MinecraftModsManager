@@ -16,6 +16,11 @@ const cancelTask = () => {
   return { ok: true };
 };
 
+const killCurrentChild = () => {
+  if (current?.child && !current.child.killed) current.child.kill();
+  return { ok: true };
+};
+
 const endTask = () => { current = null; };
 
-module.exports = { beginTask, setChild, clearChild, isCancelling, cancelTask, endTask };
+module.exports = { beginTask, setChild, clearChild, isCancelling, cancelTask, killCurrentChild, endTask };

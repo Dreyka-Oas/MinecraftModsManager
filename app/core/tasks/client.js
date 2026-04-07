@@ -1,15 +1,24 @@
-const { beginTask, cancelTask, endTask, isCancelling } = require("./state");
+const { beginTask, cancelTask, killCurrentChild, endTask, isCancelling } = require("./state");
 const { runTask } = require("./common");
 
-const startClients = async ({ repoPath, targets = [], ram = 3 }, emit) => {
+const startClients = async ({ repoPath, targets = [], ram = 3, killAfter = 0 }, emit) => {
   beginTask("client");
   emit("client-reset", { total: targets.length, ram });
   emit("client-log", { line: "[RUN] Lancement des tests clients." });
   for (let index = 0; index < targets.length; index += 1) {
     const target = targets[index];
     emit("client-progress", { done: index, total: targets.length, active: target.id, remaining: targets.length - index });
-    emit("client-report", { line: `[RUN] ${target.id} | fermeture attendue`, kind: "run" });
+    const killLabel = killAfter > 0 ? ` | kill force apres ${killAfter}s` : " | fermeture attendue";
+    emit("client-report", { line: `[RUN] ${target.id}${killLabel}`, kind: "run" });
+    let killTimer = null;
+    if (killAfter > 0) {
+      killTimer = setTimeout(() => {
+        emit("client-log", { line: `${target.id} | [RUN] Timer ecoule (${killAfter}s) — kill force du client.` });
+        killCurrentChild();
+      }, killAfter * 1000);
+    }
     const result = await runTask({ repoPath, targetPath: target.path, kind: "client", ram, onLine: (line) => emit("client-log", { line: `${target.id} | ${line}` }) });
+    if (killTimer) clearTimeout(killTimer);
     if (result.cancelled) {
       emit("client-result", { block: `[WARN] ${target.id}\nTest annule.` });
       break;

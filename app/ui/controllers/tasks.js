@@ -22,10 +22,12 @@ const exportText = async ({ title, defaultName, text, success }) => {
   return result;
 };
 
-export const openModal = (kind) => patchState((state) => ({ ...state, modal: { kind, selected: [], expanded: expandedMap(state), ram: state.client.ram || 3, clearJars: false } }));
+export const openModal = (kind) => patchState((state) => ({ ...state, modal: { kind, selected: [], expanded: expandedMap(state), ram: state.client.ram || 3, clearJars: false, killAfterEnabled: false, killAfterDelay: state.client.killAfterDelay || 60 } }));
 export const closeModal = () => patchState((state) => ({ ...state, modal: null }));
 export const openJavaPicker = () => patchState((state) => ({ ...state, javaPicker: true }));
 export const closeJavaPicker = () => patchState((state) => ({ ...state, javaPicker: false }));
+export const setKillAfterEnabled = (checked) => patchState((state) => ({ ...state, modal: { ...state.modal, killAfterEnabled: checked } }));
+export const setKillAfterDelay = (val) => patchState((state) => ({ ...state, modal: { ...state.modal, killAfterDelay: Math.max(1, Number(val) || 60) } }));
 export const setRam = (ram) => patchState((state) => ({ ...state, modal: { ...state.modal, ram: Number(ram) } }));
 export const setClearJars = (checked) => patchState((state) => ({ ...state, modal: { ...state.modal, clearJars: checked } }));
 export const toggleGroup = (loader) => patchState((state) => ({
@@ -129,6 +131,7 @@ export const confirmModal = async () => {
     patchState((s) => ({ ...s, modal: null, busy: { ...s.busy, build: true, cancelling: false } }));
     return window.workspaceApi.startBuilds({ repoPath: state.repo.repoPath, targets });
   }
-  patchState((s) => ({ ...s, modal: null, client: { ...s.client, ram: s.modal.ram }, busy: { ...s.busy, client: true, cancelling: false } }));
-  return window.workspaceApi.startClients({ repoPath: state.repo.repoPath, targets, ram: state.modal.ram });
+  patchState((s) => ({ ...s, modal: null, client: { ...s.client, ram: s.modal.ram, killAfterDelay: s.modal.killAfterDelay }, busy: { ...s.busy, client: true, cancelling: false } }));
+  const killAfter = state.modal.killAfterEnabled ? (state.modal.killAfterDelay || 60) : 0;
+  return window.workspaceApi.startClients({ repoPath: state.repo.repoPath, targets, ram: state.modal.ram, killAfter });
 };
